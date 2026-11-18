@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 346" width="880" height="346" role="img" aria-labelledby="flow-title flow-desc">
+  <title id="flow-title">How a document moves through the service</title>
+  <desc id="flow-desc">Documents enter a fair queue. A YAML policy decides which job goes first and which OCR path runs it. The result comes back as Markdown.</desc>
+  <style>
+    :root {
+      --card: #ffffff; --surface: #f6f8fa; --line: #d0d7de;
+      --ink: #1f2328; --muted: #656d76;
+      --accent: #0969da; --accent-soft: #ddf4ff;
+      --violet: #8250df; --amber: #bf8700;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --card: #0d1117; --surface: #161b22; --line: #30363d;
+        --ink: #e6edf3; --muted: #8d96a0;
+        --accent: #4493f8; --accent-soft: #121d2f;
+        --violet: #a371f7; --amber: #d29922;
+      }
+    }
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+    .mono { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; }
+    .card { fill: var(--card); stroke: var(--line); stroke-width: 1.25; }
+    .surface { fill: var(--surface); stroke: var(--line); stroke-width: 1.25; }
+    .rule { fill: var(--line); }
+    .ink { fill: var(--ink); }
+    .muted { fill: var(--muted); }
+    .accent { fill: var(--accent); }
+    .title { fill: var(--ink); font-size: 13px; font-weight: 600; }
+    .sub { fill: var(--muted); font-size: 11.5px; }
+    .note { fill: var(--muted); font-size: 11px; font-style: italic; }
+    .flow { fill: none; stroke: var(--accent); stroke-width: 1.75; stroke-linecap: round; }
+    .alt { fill: none; stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 3 4; stroke-linecap: round; }
+    .steer { fill: none; stroke: var(--muted); stroke-width: 1.25; stroke-dasharray: 2 4; stroke-linecap: round; }
+  </style>
+  <defs>
+    <marker id="head" viewBox="0 0 8 8" markerWidth="6.5" markerHeight="6.5" refX="6.5" refY="4" orient="auto">
+      <path d="M0.5,0.8 L7.2,4 L0.5,7.2 Z" fill="var(--accent)"/>
+    </marker>
+    <marker id="head-muted" viewBox="0 0 8 8" markerWidth="6" markerHeight="6" refX="6.5" refY="4" orient="auto">
+      <path d="M0.5,0.8 L7.2,4 L0.5,7.2 Z" fill="var(--muted)"/>
+    </marker>
+  </defs>
+
+  <rect x="0.5" y="0.5" width="879" height="345" rx="14" class="card"/>
+
+  <!-- policy -->
+  <rect x="276" y="22" width="340" height="106" rx="10" class="surface"/>
+  <rect x="276.6" y="58" width="338.8" height="1.25" class="rule"/>
+  <rect x="293" y="35" width="10" height="13" rx="2" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+  <text x="312" y="46" class="mono ink" font-size="12" font-weight="600">policy.yaml</text>
+  <text x="600" y="46" class="muted" font-size="11" text-anchor="end">revision 1</text>
+  <g font-size="11.5">
+    <text x="294" y="79" class="mono"><tspan class="accent">scheduling_algorithm:</tspan><tspan class="ink"> weighted_fair_v1</tspan></text>
+    <text x="294" y="97" class="mono"><tspan class="accent">producer_defaults:</tspan><tspan class="ink"> { agent: knowledge, … }</tspan></text>
+    <text x="294" y="115" class="mono"><tspan class="accent">routing_profile:</tspan><tspan class="ink"> quality-first</tspan></text>
+  </g>
+
+  <path d="M350,130 L350,189" class="steer" marker-end="url(#head-muted)"/>
+  <text x="359" y="164" class="note">who goes first</text>
+  <path d="M594,130 L594,174" class="steer" marker-end="url(#head-muted)"/>
+  <text x="603" y="157" class="note">where it runs</text>
+
+  <!-- documents -->
+  <g>
+    <rect x="48" y="180" width="60" height="76" rx="6" class="card"/>
+    <rect x="56" y="189" width="18" height="4" rx="2" fill="var(--amber)"/>
+    <rect x="66" y="192" width="60" height="76" rx="6" class="card"/>
+    <rect x="74" y="201" width="18" height="4" rx="2" fill="var(--violet)"/>
+    <rect x="84" y="204" width="60" height="76" rx="6" class="card"/>
+    <rect x="92" y="213" width="18" height="4" rx="2" class="accent"/>
+    <rect x="92" y="226" width="44" height="3" rx="1.5" class="rule"/>
+    <rect x="92" y="235" width="36" height="3" rx="1.5" class="rule"/>
+    <rect x="92" y="244" width="44" height="3" rx="1.5" class="rule"/>
+    <rect x="92" y="253" width="28" height="3" rx="1.5" class="rule"/>
+    <rect x="92" y="262" width="40" height="3" rx="1.5" class="rule"/>
+  </g>
+  <path d="M158,230 L231,230" class="flow" marker-end="url(#head)"/>
+
+  <!-- queue -->
+  <rect x="240" y="196" width="220" height="68" rx="34" class="surface"/>
+  <rect x="262" y="213" width="28" height="34" rx="6" fill="var(--amber)" opacity="0.45"/>
+  <rect x="299" y="213" width="28" height="34" rx="6" fill="var(--accent)" opacity="0.55"/>
+  <rect x="336" y="213" width="28" height="34" rx="6" fill="var(--violet)" opacity="0.7"/>
+  <rect x="373" y="213" width="28" height="34" rx="6" fill="var(--accent)" opacity="0.85"/>
+  <rect x="410" y="213" width="28" height="34" rx="6" fill="var(--violet)"/>
+
+  <!-- routing -->
+  <path d="M468,230 C502,230 498,196 530,196" class="alt"/>
+  <path d="M468,230 C502,230 498,264 530,264" class="alt"/>
+  <path d="M468,230 L527,230" class="flow" marker-end="url(#head)"/>
+
+  <rect x="536" y="181" width="116" height="30" rx="8" class="card"/>
+  <text x="594" y="200.5" class="muted" font-size="11.5" text-anchor="middle">external API</text>
+  <rect x="536" y="215" width="116" height="30" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5"/>
+  <text x="594" y="234.5" class="accent" font-size="11.5" font-weight="600" text-anchor="middle">internal engine</text>
+  <rect x="536" y="249" width="116" height="30" rx="8" class="card" stroke-dasharray="3 3"/>
+  <text x="594" y="268.5" class="muted" font-size="11.5" text-anchor="middle">path N</text>
+
+  <path d="M658,196 C690,196 686,230 716,230" class="alt"/>
+  <path d="M658,264 C690,264 686,230 716,230" class="alt"/>
+  <path d="M658,230 L727,230" class="flow" marker-end="url(#head)"/>
+
+  <!-- markdown -->
+  <rect x="738" y="185" width="72" height="90" rx="8" class="card"/>
+  <text x="748" y="206" class="mono accent" font-size="13" font-weight="700">#</text>
+  <rect x="761" y="197" width="34" height="5" rx="2.5" class="ink"/>
+  <rect x="749" y="215" width="50" height="3" rx="1.5" class="rule"/>
+  <rect x="749" y="224" width="42" height="3" rx="1.5" class="rule"/>
+  <rect x="749" y="233" width="50" height="3" rx="1.5" class="rule"/>
+  <circle cx="751" cy="247" r="1.6" class="muted"/>
+  <rect x="757" y="245.5" width="30" height="3" rx="1.5" class="rule"/>
+  <circle cx="751" cy="256" r="1.6" class="muted"/>
+  <rect x="757" y="254.5" width="22" height="3" rx="1.5" class="rule"/>
+  <rect x="784" y="261" width="42" height="22" rx="11" class="accent"/>
+  <text x="805" y="276" class="mono" font-size="11.5" font-weight="700" text-anchor="middle" fill="var(--card)">.md</text>
+
+  <!-- captions -->
+  <text x="96" y="310" class="title" text-anchor="middle">Any document</text>
+  <text x="96" y="328" class="sub" text-anchor="middle">PDF · DOCX · PPTX</text>
+  <text x="350" y="310" class="title" text-anchor="middle">Fair queue</text>
+  <text x="350" y="328" class="sub" text-anchor="middle">no tenant starves</text>
+  <text x="594" y="310" class="title" text-anchor="middle">Best-fit OCR path</text>
+  <text x="594" y="328" class="sub" text-anchor="middle">automatic fallback</text>
+  <text x="778" y="310" class="title" text-anchor="middle">Markdown</text>
+  <text x="778" y="328" class="sub" text-anchor="middle">poll · SSE · webhook</text>
+</svg>

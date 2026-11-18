@@ -1,0 +1,46 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "doc-processing-service"
+version = "0.1.0"
+description = "Event-driven document OCR orchestration core"
+requires-python = ">=3.12"
+dependencies = [
+  "asyncpg>=0.30,<1",
+  "boto3>=1.35,<2",
+  "fastapi>=0.115,<1",
+  "httpx>=0.28,<1",
+  "nats-py>=2.11,<3",
+  "pydantic>=2.10,<3",
+  "pypdf>=5,<6",
+  "python-multipart>=0.0.20,<1",
+  "PyYAML>=6.0.2,<7",
+  "uvicorn>=0.34,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3,<10",
+  "pytest-asyncio>=0.24,<2",
+]
+
+[project.scripts]
+doc-processing-service = "doc_processing.main:run"
+doc-processing-worker = "doc_processing.worker:run"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/doc_processing"]
+
+[tool.pytest.ini_options]
+# Wall-clock throughput/latency tests are marked ``perf`` and excluded by
+# default so timing never flakes the deterministic contract suite. Run them
+# explicitly with ``pytest -m perf`` (a command-line ``-m`` overrides this).
+addopts = "-ra -m 'not perf'"
+asyncio_mode = "auto"
+pythonpath = ["src"]
+testpaths = ["tests"]
+markers = [
+  "perf: wall-clock throughput/latency and scheduling-adherence-under-load tests (opt-in)",
+]

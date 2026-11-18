@@ -1,0 +1,125 @@
+schema_version: 1
+policy_id: default-ocr
+revision: 1
+scheduling_algorithm: weighted_fair_v1
+scheduling_cost: pages
+
+# Producer identity is trusted server-side input. Requests without a producer
+# retain the v0.1 requested-priority behavior through requested_priority_defaults.
+producer_defaults:
+  agent: knowledge
+  chat: chat
+  rag_ingestion: rag
+  workflow: workflow
+
+requested_priority_defaults:
+  bulk: bulk
+  standard: standard
+  workflow: workflow
+  interactive: interactive
+
+service_classes:
+  knowledge:
+    queue_priority: 50
+    share_weight: 6
+    reserved_minimum: 0.35
+    borrow_unused: true
+    starvation_bound_seconds: 3600
+    routing_profile: quality-first
+  interactive:
+    queue_priority: 40
+    share_weight: 4
+    reserved_minimum: 0.15
+    borrow_unused: true
+    starvation_bound_seconds: 1800
+    routing_profile: latency-first
+  chat:
+    queue_priority: 30
+    share_weight: 3
+    reserved_minimum: 0.20
+    borrow_unused: true
+    starvation_bound_seconds: 1800
+    routing_profile: latency-first
+  workflow:
+    queue_priority: 30
+    share_weight: 3
+    reserved_minimum: 0.10
+    borrow_unused: true
+    starvation_bound_seconds: 3600
+    routing_profile: balanced
+  standard:
+    queue_priority: 20
+    share_weight: 2
+    reserved_minimum: 0.05
+    borrow_unused: true
+    starvation_bound_seconds: 7200
+    routing_profile: balanced
+  rag:
+    queue_priority: 10
+    share_weight: 1
+    reserved_minimum: 0.05
+    borrow_unused: true
+    starvation_bound_seconds: 14400
+    routing_profile: throughput
+  bulk:
+    queue_priority: 10
+    share_weight: 1
+    reserved_minimum: 0.05
+    borrow_unused: true
+    starvation_bound_seconds: 14400
+    routing_profile: throughput
+
+routing_profiles:
+  quality-first:
+    minimum_quality_score: 0.0
+    objectives:
+      - availability
+      - quality
+      - expected_duration
+      - routing_priority
+  latency-first:
+    minimum_quality_score: 0.0
+    objectives:
+      - availability
+      - expected_duration
+      - quality
+      - routing_priority
+  balanced:
+    minimum_quality_score: 0.0
+    objectives:
+      - availability
+      - quality
+      - expected_duration
+      - routing_priority
+  throughput:
+    minimum_quality_score: 0.0
+    objectives:
+      - availability
+      - expected_cost
+      - expected_duration
+      - quality
+      - routing_priority
+
+failure_rules:
+  dependency.timeout:
+    disposition: fallback
+    max_attempts_per_path: 1
+    max_attempts_per_job: 4
+  dependency.unavailable:
+    disposition: fallback
+    max_attempts_per_path: 1
+    max_attempts_per_job: 4
+  engine.crash:
+    disposition: fallback
+    max_attempts_per_path: 1
+    max_attempts_per_job: 3
+  capacity.busy:
+    disposition: retry
+    max_attempts_per_path: 2
+    max_attempts_per_job: 4
+    retry_delay_seconds: 0.05
+
+default_failure_rule:
+  disposition: fail
+  max_attempts_per_path: 1
+  max_attempts_per_job: 1

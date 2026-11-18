@@ -1,0 +1,122 @@
+services:
+  app:
+    build:
+      context: .
+    environment:
+      ARTIFACT_STORAGE_BACKEND: s3
+      JOB_STORE_BACKEND: postgres
+      DISPATCH_BACKEND: jetstream
+      SERVICE_ROLE: api
+      NATS_URL: nats://nats:4222
+      JETSTREAM_REPLICAS: 1
+      OCR_CONFIG_PATH: /app/configs/ocr-paths.yaml
+      POLICY_CONFIG_PATH: /app/configs/policy.yaml
+      DATABASE_URL: postgresql://doc-processing@postgres:5432/doc-processing
+      WEBHOOK_SIGNING_SECRET: ${WEBHOOK_SIGNING_SECRET:-}
+      WEBHOOK_ALLOWED_HOSTS: ${WEBHOOK_ALLOWED_HOSTS:-}
+      S3_ENDPOINT_URL: http://seaweedfs:8333
+      S3_BUCKET: doc-processing
+      AWS_ACCESS_KEY_ID: doc-processing-dev
+      AWS_SECRET_ACCESS_KEY: local-development-only
+      AWS_DEFAULT_REGION: us-east-1
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      seaweedfs:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8000/readyz')"
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  processor:
+    build:
+      context: .
+    command: ["python", "-m", "doc_processing.worker"]
+    environment:
+      ARTIFACT_STORAGE_BACKEND: s3
+      JOB_STORE_BACKEND: postgres
+      DISPATCH_BACKEND: jetstream
+      NATS_URL: nats://nats:4222
+      JETSTREAM_REPLICAS: 1
+      OCR_CONFIG_PATH: /app/configs/ocr-paths.yaml
+      POLICY_CONFIG_PATH: /app/configs/policy.yaml
+      DATABASE_URL: postgresql://doc-processing@postgres:5432/doc-processing
+      S3_ENDPOINT_URL: http://seaweedfs:8333
+      S3_BUCKET: doc-processing
+      AWS_ACCESS_KEY_ID: doc-processing-dev
+      AWS_SECRET_ACCESS_KEY: local-development-only
+      AWS_DEFAULT_REGION: us-east-1
+    depends_on:
+      postgres:
+        condition: service_healthy
+      seaweedfs:
+        condition: service_healthy
+      nats:
+        condition: service_started
+
+  nats:
+    image: nats:2.11-alpine
+    command: ["--jetstream", "--store_dir=/data", "--http_port=8222"]
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    volumes:
+      - nats-data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8222/healthz"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 3s
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: doc-processing
+      POSTGRES_USER: doc-processing
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U doc-processing -d doc-processing"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+
+  seaweedfs:
+    image: chrislusf/seaweedfs:4.45
+    command:
+      - mini
+      - -dir=/data
+    environment:
+      S3_BUCKET: doc-processing
+      AWS_ACCESS_KEY_ID: doc-processing-dev
+      AWS_SECRET_ACCESS_KEY: local-development-only
+    ports:
+      - "8333:8333"
+      - "9333:9333"
+    volumes:
+      - seaweedfs-data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9333/cluster/status"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+volumes:
+  nats-data:
+  postgres-data:
+  seaweedfs-data:

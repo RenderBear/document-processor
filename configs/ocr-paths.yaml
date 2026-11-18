@@ -1,0 +1,66 @@
+schema_version: 1
+scheduler:
+  workers: 4
+  capacity_poll_interval_seconds: 0.02
+preflight:
+  # Resource ceiling and text-layer heuristic for the pre-scheduling profiler.
+  max_pages: 5000
+  text_sample_pages: 5
+  digital_text_threshold_chars: 16
+paths:
+  - path_id: external-mock
+    revision: 1
+    adapter: mock_external
+    enabled: true
+    routing_priority: 100
+    fallback_path_ids:
+      - internal-mock
+    capabilities:
+      media_types:
+        - application/pdf
+        - application/vnd.openxmlformats-officedocument.wordprocessingml.document
+        - application/vnd.openxmlformats-officedocument.presentationml.presentation
+      output_formats:
+        - text/markdown
+    limits:
+      max_concurrency: 2
+      request_timeout_seconds: 10.0
+      max_document_bytes: 52428800
+      max_pages: 500
+      requests_per_minute: 120
+      burst: 2
+    estimates:
+      quality_score: 0.95
+      fixed_seconds: 3.5
+      seconds_per_page: 0.08
+      cost_per_page: 0.01
+    mock:
+      latency_seconds: 3.5
+
+  - path_id: internal-mock
+    revision: 1
+    adapter: mock_internal
+    enabled: true
+    routing_priority: 50
+    fallback_path_ids: []
+    capabilities:
+      media_types:
+        - application/pdf
+        - application/vnd.openxmlformats-officedocument.wordprocessingml.document
+        - application/vnd.openxmlformats-officedocument.presentationml.presentation
+      output_formats:
+        - text/markdown
+    limits:
+      max_concurrency: 1
+      request_timeout_seconds: 12.0
+      max_document_bytes: 104857600
+      max_pages: 1000
+      requests_per_minute: 60
+      burst: 1
+    estimates:
+      quality_score: 0.90
+      fixed_seconds: 5.0
+      seconds_per_page: 0.12
+      cost_per_page: 0.0
+    mock:
+      latency_seconds: 5.0

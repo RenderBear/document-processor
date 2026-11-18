@@ -1,0 +1,35 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Coverage and test output
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# Virtual environments and local package caches
+.venv/
+venv/
+.uv-cache/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Runtime and downloaded test data
+/.data/
+mock/data/docs/
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/
+
+# Dependency lockfile is generated locally by uv
+uv.lock

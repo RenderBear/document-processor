@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Submit documents and follow their processing state." />
+    <title>Document upload mock</title>
+    <link rel="stylesheet" href="/static/styles.css?v=7" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="masthead">
+        <a class="brand" href="/" aria-label="Document processing home">
+          <span class="brand-mark" aria-hidden="true">D</span>
+          <span>Document processing</span>
+        </a>
+        <span class="environment">Local mock interface</span>
+      </header>
+
+      <section class="workspace" aria-labelledby="page-title">
+        <h1 class="visually-hidden" id="page-title">Document transfer</h1>
+        <section class="transfer-toolbar" aria-label="Upload controls">
+          <fieldset class="type-selector">
+            <legend>Source</legend>
+            <div class="type-options">
+              <label class="type-option">
+                <input type="radio" name="producer-kind" value="chat" checked />
+                <span class="type-card">Chat</span>
+              </label>
+              <label class="type-option">
+                <input type="radio" name="producer-kind" value="rag_ingestion" />
+                <span class="type-card">RAG</span>
+              </label>
+              <label class="type-option">
+                <input type="radio" name="producer-kind" value="agent" />
+                <span class="type-card">Agent</span>
+              </label>
+              <label class="type-option">
+                <input type="radio" name="producer-kind" value="workflow" />
+                <span class="type-card">Workflow</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <label class="context-field" id="context-field" for="context-id">
+            <span id="context-label">Reference</span>
+            <input
+              id="context-id"
+              name="context-id"
+              type="text"
+              value="default"
+              maxlength="100"
+              pattern="[A-Za-z0-9][A-Za-z0-9._:-]{0,99}"
+              autocomplete="off"
+            />
+            <small id="context-help">Identifies this bulk upload.</small>
+          </label>
+        </section>
+
+        <div class="split-panel">
+          <section class="upload-pane" aria-labelledby="upload-title">
+            <div class="pane-heading">
+              <div>
+                <h2 id="upload-title">Ready to send</h2>
+                <p>Local files waiting for submission</p>
+              </div>
+              <div class="pane-heading-actions">
+                <span id="selection-count">0 files</span>
+                <label class="upload-control" for="file-input">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" />
+                  </svg>
+                  <span>Upload files</span>
+                  <input id="file-input" type="file" multiple />
+                </label>
+              </div>
+            </div>
+
+            <div class="queue-empty" id="queue-empty">No files selected.</div>
+            <ul class="queue-list" id="queue-list" aria-label="Files in upload queue"></ul>
+
+            <div class="queue-actions" id="selection-summary" hidden>
+              <button class="clear-button" id="clear-button" type="button">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5m4-5v5" />
+                </svg>
+                <span>Clear queue</span>
+              </button>
+            </div>
+          </section>
+
+          <div class="transfer-lane">
+            <button
+              class="transfer-button"
+              id="upload-button"
+              type="button"
+              title="Send all queued files to processing"
+              disabled
+            >
+              <span aria-hidden="true">&#8594;</span>
+              <span class="visually-hidden">Send all queued files to processing</span>
+            </button>
+            <span class="transfer-label">Process</span>
+          </div>
+
+          <section class="progress-pane" aria-labelledby="progress-title" aria-live="polite">
+            <div class="pane-heading">
+              <div>
+                <h2 id="progress-title">Processing queue</h2>
+                <p id="progress-summary">Restoring saved activity</p>
+              </div>
+              <button class="clear-completed" id="clear-completed" type="button" disabled>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5m4-5v5" />
+                </svg>
+                <span>Clear completed</span>
+              </button>
+            </div>
+
+            <div class="queue-search">
+              <svg class="queue-search-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-3.5-3.5" />
+              </svg>
+              <input
+                id="queue-search"
+                type="search"
+                placeholder="Search by document or reference"
+                aria-label="Search the processing queue by document name or reference"
+                autocomplete="off"
+              />
+            </div>
+
+            <div class="empty-state" id="empty-state">
+              <p id="empty-copy">No accepted jobs in this session.</p>
+            </div>
+
+            <ul class="file-list" id="file-list" aria-label="Document job queue"></ul>
+          </section>
+        </div>
+      </section>
+
+    </main>
+
+    <script src="/static/app.js?v=7" defer></script>
+  </body>
+</html>

@@ -1,0 +1,9 @@
+services:
+  app:
+    ports: !reset []
+  postgres:
+    ports: !reset []
+  nats:
+    ports: !reset []
+  seaweedfs:
+    ports: !reset []
